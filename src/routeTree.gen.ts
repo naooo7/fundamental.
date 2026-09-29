@@ -10,33 +10,91 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PracticeIndexRouteImport } from './routes/practice/index'
+import { Route as PracticeExamIdIndexRouteImport } from './routes/practice/$examId/index'
+import { Route as PracticeExamIdSubtestIdIndexRouteImport } from './routes/practice/$examId/$subtestId/index'
+import { Route as PracticeExamIdSubtestIdMaterialIdRouteImport } from './routes/practice/$examId/$subtestId/$materialId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PracticeIndexRoute = PracticeIndexRouteImport.update({
+  id: '/practice/',
+  path: '/practice/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticeExamIdIndexRoute = PracticeExamIdIndexRouteImport.update({
+  id: '/practice/$examId/',
+  path: '/practice/$examId/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PracticeExamIdSubtestIdIndexRoute =
+  PracticeExamIdSubtestIdIndexRouteImport.update({
+    id: '/practice/$examId/$subtestId/',
+    path: '/practice/$examId/$subtestId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const PracticeExamIdSubtestIdMaterialIdRoute =
+  PracticeExamIdSubtestIdMaterialIdRouteImport.update({
+    id: '/practice/$examId/$subtestId/$materialId',
+    path: '/practice/$examId/$subtestId/$materialId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/practice/': typeof PracticeIndexRoute
+  '/practice/$examId/': typeof PracticeExamIdIndexRoute
+  '/practice/$examId/$subtestId/$materialId': typeof PracticeExamIdSubtestIdMaterialIdRoute
+  '/practice/$examId/$subtestId/': typeof PracticeExamIdSubtestIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/practice': typeof PracticeIndexRoute
+  '/practice/$examId': typeof PracticeExamIdIndexRoute
+  '/practice/$examId/$subtestId/$materialId': typeof PracticeExamIdSubtestIdMaterialIdRoute
+  '/practice/$examId/$subtestId': typeof PracticeExamIdSubtestIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/practice/': typeof PracticeIndexRoute
+  '/practice/$examId/': typeof PracticeExamIdIndexRoute
+  '/practice/$examId/$subtestId/$materialId': typeof PracticeExamIdSubtestIdMaterialIdRoute
+  '/practice/$examId/$subtestId/': typeof PracticeExamIdSubtestIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/practice/'
+    | '/practice/$examId/'
+    | '/practice/$examId/$subtestId/$materialId'
+    | '/practice/$examId/$subtestId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/practice'
+    | '/practice/$examId'
+    | '/practice/$examId/$subtestId/$materialId'
+    | '/practice/$examId/$subtestId'
+  id:
+    | '__root__'
+    | '/'
+    | '/practice/'
+    | '/practice/$examId/'
+    | '/practice/$examId/$subtestId/$materialId'
+    | '/practice/$examId/$subtestId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PracticeIndexRoute: typeof PracticeIndexRoute
+  PracticeExamIdIndexRoute: typeof PracticeExamIdIndexRoute
+  PracticeExamIdSubtestIdMaterialIdRoute: typeof PracticeExamIdSubtestIdMaterialIdRoute
+  PracticeExamIdSubtestIdIndexRoute: typeof PracticeExamIdSubtestIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +106,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/practice/': {
+      id: '/practice/'
+      path: '/practice'
+      fullPath: '/practice/'
+      preLoaderRoute: typeof PracticeIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice/$examId/': {
+      id: '/practice/$examId/'
+      path: '/practice/$examId'
+      fullPath: '/practice/$examId/'
+      preLoaderRoute: typeof PracticeExamIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice/$examId/$subtestId/': {
+      id: '/practice/$examId/$subtestId/'
+      path: '/practice/$examId/$subtestId'
+      fullPath: '/practice/$examId/$subtestId/'
+      preLoaderRoute: typeof PracticeExamIdSubtestIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/practice/$examId/$subtestId/$materialId': {
+      id: '/practice/$examId/$subtestId/$materialId'
+      path: '/practice/$examId/$subtestId/$materialId'
+      fullPath: '/practice/$examId/$subtestId/$materialId'
+      preLoaderRoute: typeof PracticeExamIdSubtestIdMaterialIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PracticeIndexRoute: PracticeIndexRoute,
+  PracticeExamIdIndexRoute: PracticeExamIdIndexRoute,
+  PracticeExamIdSubtestIdMaterialIdRoute:
+    PracticeExamIdSubtestIdMaterialIdRoute,
+  PracticeExamIdSubtestIdIndexRoute: PracticeExamIdSubtestIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
