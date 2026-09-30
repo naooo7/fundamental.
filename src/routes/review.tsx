@@ -28,7 +28,7 @@ function ReviewScreen() {
     <Screen>
       <PageHeader
         title="Needs Review"
-        caption={items.length ? `${total} questions across ${items.length} topics` : undefined}
+        caption={items.length ? `${total} questions across ${items.length} topics` : ""}
         back={{ to: "/" }}
       />
       {!data ? null : items.length === 0 ? (
