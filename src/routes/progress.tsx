@@ -95,7 +95,7 @@ function ProgressScreen() {
         <div>
           <p className="text-[15px] font-medium">Needs Review</p>
           <p className="mt-0.5 text-[13px] text-muted-foreground">
-            {review.length ? `${review.length} topics need another look` : "Nothing to review"}
+            {review.length ? `${review.length} topic${review.length === 1 ? "" : "s"} to revisit` : "Nothing to review"}
           </p>
         </div>
         <span className="text-muted-foreground/60">›</span>

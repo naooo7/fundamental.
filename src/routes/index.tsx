@@ -86,7 +86,7 @@ function Home() {
               <div className="min-w-0 flex-1">
                 <p className="text-[15px] font-medium tracking-[-0.01em]">Needs Review</p>
                 <p className="mt-0.5 text-[13px] text-muted-foreground">
-                  {reviewCount ? `${reviewCount} topics need another look` : "Nothing to review"}
+                  {reviewCount ? `${reviewCount} topic${reviewCount === 1 ? "" : "s"} need${reviewCount === 1 ? "s" : ""} another look` : "Nothing to review"}
                 </p>
               </div>
               <span className="rounded-lg border border-border-strong px-3 py-1.5 text-[13px] font-medium">Review</span>
