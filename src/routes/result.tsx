@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { formatDuration, summarize, useActivity } from "@/lib/activity";
 
 export const Route = createFileRoute("/result")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -8,6 +9,7 @@ export const Route = createFileRoute("/result")({
     material: (search["material"] as string) ?? "Practice",
     examId: (search["examId"] as string) ?? "skd",
     subtestId: (search["subtestId"] as string) ?? "tiu",
+    sessionId: (search["sessionId"] as string) ?? "",
   }),
   head: () => ({
     meta: [
@@ -23,9 +25,19 @@ export const Route = createFileRoute("/result")({
 });
 
 function ResultScreen() {
-  const { correct, total, material } = Route.useSearch();
+  const search = Route.useSearch();
+  const data = useActivity();
+  const session = data?.sessions.find((s) => s.id === search.sessionId);
+  const attempts = data?.attempts.filter((a) => a.sessionId === search.sessionId) ?? [];
+  const stats = attempts.length ? summarize(attempts) : null;
+
+  const correct = stats ? stats.correct : search.correct;
+  const total = stats ? stats.total : search.total;
   const incorrect = Math.max(total - correct, 0);
   const pct = total ? Math.round((correct / total) * 100) : 0;
+  const time = session?.endedAt
+    ? new Date(session.endedAt).getTime() - new Date(session.startedAt).getTime()
+    : (stats?.timeMs ?? 0);
 
   return (
     <div className="min-h-screen bg-background">
@@ -35,12 +47,12 @@ function ResultScreen() {
           {correct} / {total}
         </h1>
         <p className="tabular mt-2 text-lg text-muted-foreground">{pct}% accuracy</p>
-        <p className="mt-1 text-sm text-muted-foreground">{material}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{session?.materialName ?? search.material}</p>
 
         <div className="mt-8 divide-y divide-border border-y border-border">
           <Row label="Correct" value={String(correct)} />
           <Row label="Incorrect" value={String(incorrect)} />
-          <Row label="Time" value="16m 42s" />
+          <Row label="Time" value={data ? formatDuration(time) : "—"} />
           <Row label="Needs review" value={`${incorrect} questions`} />
         </div>
 

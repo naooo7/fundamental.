@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { endSession, recordAttempt, startSession } from "@/lib/activity";
 import { Button } from "@/components/ui/button";
 import { findMaterial, getQuestions } from "@/data/prototype";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,15 @@ function SessionScreen() {
   const [selected, setSelected] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  const sessionId = useRef<string | null>(null);
+  const questionStart = useRef<number>(0);
+
+  useEffect(() => {
+    if (!material) return;
+    sessionId.current = startSession({ examId, subtestId, materialId, materialName: material.name, mode });
+    questionStart.current = Date.now();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [examId, subtestId, materialId]);
 
   if (!material) throw notFound();
 
@@ -40,13 +50,27 @@ function SessionScreen() {
   const last = index === questions.length - 1;
 
   function submit() {
-    if (!selected) return;
-    if (selected === q.answer) setCorrectCount((c) => c + 1);
+    if (!selected || !sessionId.current) return;
+    const correct = selected === q.answer;
+    if (correct) setCorrectCount((c) => c + 1);
+    recordAttempt({
+      sessionId: sessionId.current,
+      examId,
+      subtestId,
+      materialId,
+      materialName: material!.name,
+      questionId: q.id,
+      selected,
+      correct,
+      // cap idle time per question at 10 min
+      durationMs: Math.min(Date.now() - questionStart.current, 10 * 60_000),
+    });
     setRevealed(true);
   }
 
   function next() {
     if (last) {
+      if (sessionId.current) endSession(sessionId.current);
       navigate({
         to: "/result",
         search: {
@@ -55,6 +79,7 @@ function SessionScreen() {
           material: material!.name,
           examId,
           subtestId,
+          sessionId: sessionId.current ?? "",
         },
       });
       return;
@@ -62,6 +87,7 @@ function SessionScreen() {
     setIndex((i) => i + 1);
     setSelected(null);
     setRevealed(false);
+    questionStart.current = Date.now();
   }
 
   return (
